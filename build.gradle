@@ -19,13 +19,13 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation group: "com.twilio.sdk", name: "twilio", version: "9.0.1"
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.0-rc2'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.cloud:spring-cloud-gcp-data-firestore:1.2.8.RELEASE'
+	implementation 'org.springframework.cloud:spring-cloud-gcp-starter:1.2.8.RELEASE'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

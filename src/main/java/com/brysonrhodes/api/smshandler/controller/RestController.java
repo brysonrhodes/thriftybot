@@ -25,11 +25,6 @@ public class RestController {
         return twilioService.sendMessage(text.getTo(), text.getFrom(), text.getMessage());
     }
 
-    @RequestMapping( value = "/print")
-    public void print() {
-        twilioService.print();
-    }
-
     @RequestMapping( value = "/receive", consumes = "application/x-www-form-urlencoded")
     public void receiveMessage(TwiMessage twiMessage) {
         log.info("Message is: {}", twiMessage.toString());

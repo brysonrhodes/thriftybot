@@ -13,6 +13,7 @@ spring:
       ddl-auto: create-drop
   cloud:
     gcp:
+      project-id: ecstatic-branch-366221
       firestore:
         project-id: ecstatic-branch-366221
         credentials:
