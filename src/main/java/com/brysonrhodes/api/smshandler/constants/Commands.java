@@ -12,10 +12,13 @@ public class Commands {
             "unsubscribe",
             "subscribe",
             "groups",
-            "group create",
+            "group add",
             "group remove",
             "users",
             "user add",
             "user remove",
+            "@",
+            "#",
+            "developer help",
             "suggest");
 }
