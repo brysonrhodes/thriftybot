@@ -96,7 +96,6 @@ public class TwilioService {
                     case "book set" -> response = setBook(message);
                     case "group add" -> response = addGroup(message);
                     case "group remove" -> response = removeGroup(message);
-                    case "user add" -> response = addUser(message);
                     case "user remove" -> response = removeUser(message);
                     default -> {
                     }
@@ -108,7 +107,7 @@ public class TwilioService {
                 case "book" -> response = getBook();
                 case "subscribe" -> response = subscribe(from, message);
                 case "unsubscribe" -> response = unsubscribe(from, message);
-                case "suggest" -> sendMessage(developerPhone, from, message);
+                case "suggest", "developer help" -> sendMessage(developerPhone, from, message);
                 default -> {
                 }
             }
@@ -143,7 +142,7 @@ public class TwilioService {
             if(!group.isEmpty()) {
                 Group groupObject = (Group) firestoreService.getObject("groups", group.substring(group.length() - (group.length() - 1), group.length() -1 ), new Group());
 
-                String finalTextContent = textContent;
+                String finalTextContent = String.format("%s \nIf you would like to unsubscribe from this group use 'thrifty unsubscribe %s'. \nTo Stop receiving all messages type 'STOP'", textContent, groupObject.name);
                 assert groupObject.users != null;
                 groupObject.users.forEach(phone -> {
                     log.info("Sending message: {} to {}", finalTextContent, phone);
@@ -156,7 +155,7 @@ public class TwilioService {
             }
         } catch (Exception e) {
             log.info(e.getMessage());
-            return "Unable to send Individual message, please try again later or user the command: \nthrifty developer help {message} \n for assistance";
+            return "Unable to send Group message, please try again later or user the command: \nthrifty developer help {message} \n for assistance";
         }
     }
 
@@ -270,54 +269,6 @@ public class TwilioService {
         } catch (Exception e) {
             log.error(e.getMessage());
             return "Unable to set book, please try again later or user the command: \nthrifty developer help {message} \n for assistance";
-        }
-    }
-
-    /** Adds a user to the database if the user doesn't already exist.
-     *
-     * @param message a command passed in from the user.
-     * @return        a response about user status. (User added or already present)
-     */
-    private String addUser(String message) {
-        List<String> tempList = getRegexPattern(message);
-
-        try {
-            if(tempList.size() == 6) {
-                String phone = tempList.get(3);
-                String firstName = tempList.get(4);
-                String lastName = tempList.get(5);
-
-                User newUser = User.builder()
-                        .phone(phone)
-                        .firstName(firstName)
-                        .lastName(lastName)
-                        .build();
-
-                Config config = getConfig();
-
-                if(!config.usernames.containsValue(phone)) {
-                    log.info("Writing Username for {}", newUser);
-                    String username = firstName;
-
-                    if(config.usernames.containsKey(username)) {
-                        username = firstName + phone.substring(phone.length() - 4);
-                    }
-
-                    config.usernames.put(username.toLowerCase(), phone);
-                    firestoreService.addObject("configs", config, "thrifty");
-                }
-
-                if(firestoreService.getObject("users", newUser.phone, new User()) != null ) return String.format("User with number %s has already been added", newUser.phone);
-
-                firestoreService.addObject("users", newUser, newUser.phone);
-                log.info("New User: \n First Name: {} \n Last Name: {} \n Phone: {}", newUser.firstName, newUser.lastName, newUser.phone);
-                return String.format("%s %s has been added", newUser.firstName, newUser.lastName);
-            } else {
-                throw new IllegalArgumentException("Too many or few parameters");
-            }
-        } catch (Exception e) {
-            log.error("Error adding user {}", e.getMessage());
-            return "Unable to Add User, please try again later or user the command: \nthrifty developer help {message} \n for assistance";
         }
     }
 
